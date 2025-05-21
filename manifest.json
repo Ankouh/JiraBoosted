@@ -1,0 +1,40 @@
+{
+  "manifest_version": 3,
+  "name": "Jira Boosted",
+  "version": "1.0.0",
+  "description": "Améliorez votre expérience JIRA avec des fonctionnalités supplémentaires",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting"
+  ],
+  "host_permissions": [
+    "*://sts-lyon.atlassian.net/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://sts-lyon.atlassian.net/*"],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_end",
+      "all_frames": true
+    }
+  ],
+  "web_accessible_resources": [{
+    "resources": ["content.css"],
+    "matches": ["*://sts-lyon.atlassian.net/*"]
+  }]
+} 

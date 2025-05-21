@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Jira Boosted</title>
+  <style>
+    body {
+      width: 400px;
+      padding: 15px;
+      font-family: Arial, sans-serif;
+    }
+    .container {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+    .status {
+      color: #666;
+      font-size: 0.9em;
+      padding: 8px;
+      margin-top: 10px;
+      border-radius: 4px;
+      text-align: center;
+    }
+    .status:not(:empty) {
+      background-color: #E3FCEF;
+      color: #006644;
+    }
+    .button-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 300px;
+      overflow-y: auto;
+      padding: 5px;
+    }
+    .button-item {
+      display: grid;
+      grid-template-columns: auto 1fr 2fr auto;
+      gap: 10px;
+      align-items: center;
+      padding: 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      background-color: #f4f5f7;
+      cursor: move;
+      user-select: none;
+      transition: background-color 0.2s, transform 0.2s;
+    }
+    .button-item:hover {
+      background-color: #ebecf0;
+    }
+    .button-item.dragging {
+      opacity: 0.5;
+      background-color: #deebff;
+      transform: scale(1.02);
+    }
+    .drag-handle {
+      color: #6B778C;
+      cursor: move;
+      padding: 0 5px;
+      font-size: 16px;
+      line-height: 1;
+    }
+    .button-item span {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .button-item span:first-of-type {
+      font-weight: bold;
+    }
+    .button-item button.delete {
+      background-color: #DE350B;
+      padding: 6px 12px;
+      font-size: 0.9em;
+      white-space: nowrap;
+    }
+    .button-item button.delete:hover {
+      background-color: #BF2600;
+    }
+    .add-button-form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      margin-top: 10px;
+      background-color: #f4f5f7;
+    }
+    h2, h3, h4 {
+      margin: 0;
+      color: #172B4D;
+    }
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .button-count {
+      font-size: 0.9em;
+      color: #6B778C;
+    }
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    input[type="url"], input[type="text"] {
+      padding: 8px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    button {
+      padding: 8px 16px;
+      background-color: #0052CC;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+    }
+    button:hover {
+      background-color: #0747A6;
+    }
+    .refresh-notice {
+      background-color: #DEEBFF;
+      color: #0747A6;
+      padding: 8px 12px;
+      border-radius: 4px;
+      margin: 10px 0;
+      font-size: 0.9em;
+      display: none;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid #B3D4FF;
+    }
+    .refresh-notice.visible {
+      display: flex;
+    }
+    .refresh-notice::before {
+      content: "↻";
+      font-size: 1.2em;
+      font-weight: bold;
+      display: inline-block;
+      animation: spin 2s infinite linear;
+    }
+    @keyframes spin {
+      from {
+        transform: rotate(0deg);
+      }
+      to {
+        transform: rotate(360deg);
+      }
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+    .header img {
+      width: 32px;
+      height: 32px;
+    }
+    .header h2 {
+      margin: 0;
+      color: #172B4D;
+    }
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+      margin-top: 20px;
+      padding-top: 15px;
+      border-top: 1px solid #ddd;
+    }
+    .donate-button {
+      display: inline-block;
+      padding: 10px 20px;
+      background-color: #0070ba;
+      color: white;
+      text-decoration: none;
+      border-radius: 4px;
+      font-weight: 500;
+      transition: background-color 0.2s;
+    }
+    .donate-button:hover {
+      background-color: #005ea6;
+    }
+    .github-link {
+      display: inline-block;
+      padding: 10px;
+      border-radius: 4px;
+      transition: background-color 0.2s;
+    }
+    .github-link:hover {
+      background-color: #f4f5f7;
+    }
+    .github-link img {
+      width: 24px;
+      height: 24px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <img src="icons/icon48.png" alt="Jira Boosted Logo">
+      <h2>Jira Boosted</h2>
+    </div>
+
+    <div class="section-title">
+      <h3>Boutons personnalisés</h3>
+      <span class="button-count" id="buttonCount"></span>
+    </div>
+    <div id="buttonList" class="button-list">
+      <!-- Les boutons seront ajoutés ici dynamiquement -->
+    </div>
+
+    <div class="add-button-form">
+      <h4>Ajouter un nouveau bouton</h4>
+      <div class="input-group">
+        <label for="buttonName">Nom du bouton :</label>
+        <input type="text" id="buttonName" placeholder="Mon Bouton">
+      </div>
+      <div class="input-group">
+        <label for="buttonUrl">URL du lien :</label>
+        <input type="url" id="buttonUrl" placeholder="https://exemple.com">
+      </div>
+      <div class="input-group">
+        <label for="buttonColor">Couleur du bouton :</label>
+        <input type="color" id="buttonColor" value="#0052CC">
+      </div>
+      <button id="addButton">Ajouter le bouton</button>
+    </div>
+
+    <div id="status" class="status"></div>
+    <div id="refreshNotice" class="refresh-notice">Rafraîchissez la page Jira pour voir les changements</div>
+    
+    <div class="footer-links">
+      <a href="https://www.paypal.com/ncp/payment/4BA5C3BTXLET4" target="_blank" class="donate-button">
+        <span style="margin-right: 8px;">❤️</span>
+        Faire un don
+      </a>
+      <a href="https://github.com/Ankouh" target="_blank" class="github-link">
+        <img src="icons/github.png" alt="GitHub" title="Visiter le GitHub">
+      </a>
+    </div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html> 
