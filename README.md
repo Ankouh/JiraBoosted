@@ -6,9 +6,26 @@
 
 Une extension de navigateur pour améliorer votre expérience JIRA.
 
+## Navigateurs Supportés
+
+L'extension est compatible avec les versions suivantes des navigateurs :
+
+| Navigateur | Version Minimale | Statut |
+|------------|------------------|---------|
+| Google Chrome | 88+ | ✅ Supporté |
+| Mozilla Firefox | 85+ | ✅ Supporté |
+| Microsoft Edge | 88+ | ✅ Supporté |
+
+### Notes de compatibilité
+- Chrome 88+ (basé sur Chromium)
+- Firefox 85+ (Quantum)
+- Edge 88+ (basé sur Chromium)
+
+L'extension utilise les API modernes des navigateurs et nécessite donc des versions récentes pour fonctionner correctement.
+
 ## Prérequis
 
-- Chrome 88+ / Firefox 85+ / Edge 88+
+- Un navigateur compatible (voir section "Navigateurs Supportés" ci-dessus)
 - Un compte JIRA actif
 - Les permissions nécessaires dans votre instance JIRA
 
