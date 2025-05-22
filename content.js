@@ -36,6 +36,7 @@ function adjustColor(color, amount) {
 }
 
 let isInjected = false;
+let jiraBoostedInjected = false;
 
 function waitForElement(selector, timeout = 10000) {
   return new Promise((resolve, reject) => {
@@ -63,27 +64,45 @@ function waitForElement(selector, timeout = 10000) {
 }
 
 async function injectCustomButtons() {
+  if (jiraBoostedInjected) {
+    console.log('Injection déjà effectuée, on annule.');
+    return;
+  }
+  jiraBoostedInjected = true;
+
   console.log('Tentative d\'injection Jira Boosted...');
-  
+
+  // Supprime TOUS les anciens boutons Jira Boosted dans la page (anti-duplication)
+  document.querySelectorAll('.jira-boosted-header-container').forEach(container => container.remove());
+
+  // Sélecteur du conteneur de la barre de recherche (juste à droite du logo Jira)
+  const selectors = [
+    'div._zulp1b66._yyhykb7n._4t3i1osq._4cvr1h6o._1e0c1txw._glte1ris._15ri1mjv._1gs5usvi',
+    'div[data-testid="atlassian-navigation-product-home-container"]',
+    'header[data-testid="page-layout.top-nav"]'
+  ];
+
+  let logoContainer = null;
+  for (const sel of selectors) {
+    logoContainer = document.querySelector(sel);
+    if (logoContainer) break;
+  }
+
+  if (!logoContainer) {
+    console.log('Aucun conteneur compatible trouvé, injection annulée pour cette page.');
+    jiraBoostedInjected = false;
+    return;
+  }
+
   try {
-    // Attend que le conteneur du logo soit disponible
-    const logoContainer = await waitForElement('div._zulp1b66._yyhykb7n._4t3i1osq._4cvr1h6o._1e0c1txw._glte1ris._15ri1mjv._1gs5usvi');
-    
-    // Supprime TOUS les conteneurs existants, pas seulement le premier
-    const existingContainers = document.querySelectorAll('.jira-boosted-header-container');
-    existingContainers.forEach(container => container.remove());
-
-    // Vérifie si les boutons sont déjà présents après le nettoyage
-    if (document.querySelector('.jira-boosted-header-container')) {
-      console.log('Les boutons sont déjà présents, annulation de l\'injection');
-      return;
-    }
-
     // Crée le conteneur
     const container = document.createElement('span');
     container.className = 'jira-boosted-header-container';
     container.id = 'jira-boosted-container';
     container.style.marginLeft = '10px';
+    container.style.display = 'flex';
+    container.style.alignItems = 'center';
+    container.style.gap = '8px';
 
     // Récupère les boutons personnalisés
     const result = await new Promise(resolve => chrome.storage.sync.get(['customButtons'], resolve));
@@ -101,16 +120,30 @@ async function injectCustomButtons() {
     
     container.appendChild(fragment);
     
-    // Vérifie une dernière fois avant l'injection
-    if (!document.getElementById('jira-boosted-container')) {
-      logoContainer.appendChild(container);
-      console.log('Boutons Jira Boosted injectés avec succès dans l\'ordre suivant:', 
-        buttons.map(b => b.name).join(', '));
+    // Insère les boutons AVANT la barre de recherche si possible
+    const searchInput = logoContainer.querySelector('input[type="text"]');
+    if (searchInput && searchInput.parentElement) {
+      searchInput.parentElement.parentElement.insertBefore(container, searchInput.parentElement);
     } else {
-      console.log('Un conteneur existe déjà, injection annulée');
+      // Sinon, ajoute à la fin du conteneur
+      logoContainer.appendChild(container);
     }
+
+    console.log('Boutons Jira Boosted injectés avec succès dans l\'ordre suivant:', 
+      buttons.map(b => b.name).join(', '));
+
+    // Observer la disparition du conteneur pour réinitialiser le flag
+    const observer = new MutationObserver(() => {
+      if (!document.querySelector('.jira-boosted-header-container')) {
+        jiraBoostedInjected = false;
+        observer.disconnect();
+      }
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+
   } catch (error) {
     console.error('Erreur lors de l\'injection des boutons:', error);
+    jiraBoostedInjected = false;
   }
 }
 
@@ -154,12 +187,14 @@ function initialize() {
   });
 
   // Réinitialise l'état d'injection lors des changements de boutons
-  chrome.storage.onChanged.addListener((changes, area) => {
-    if (area === 'sync' && changes.customButtons) {
-      isInjected = false;
-      safeInject();
-    }
-  });
+  if (chrome.storage && chrome.storage.onChanged) {
+    chrome.storage.onChanged.addListener((changes, area) => {
+      if (area === 'sync' && changes.customButtons) {
+        isInjected = false;
+        safeInject();
+      }
+    });
+  }
 
   // Gestion des événements de navigation
   window.addEventListener('popstate', () => {

@@ -23,11 +23,19 @@ L'extension est compatible avec les versions suivantes des navigateurs :
 
 L'extension utilise les API modernes des navigateurs et nécessite donc des versions récentes pour fonctionner correctement.
 
+**Domaine Jira supporté :**
+- L'extension fonctionne sur les domaines Jira de type `*.atlassian.net` (ex : `sts-lyon.atlassian.net`).
+
 ## Prérequis
 
 - Un navigateur compatible (voir section "Navigateurs Supportés" ci-dessus)
 - Un compte JIRA actif
 - Les permissions nécessaires dans votre instance JIRA
+
+## Permissions utilisées
+
+- `storage` : pour stocker localement la configuration des boutons personnalisés.
+- **Aucune autre permission n'est demandée.**
 
 ## Fonctionnalités
 
@@ -45,6 +53,7 @@ L'extension utilise les API modernes des navigateurs et nécessite donc des vers
 2. Activez le "Mode développeur" en haut à droite
 3. Cliquez sur "Charger l'extension non empaquetée"
 4. Sélectionnez le dossier de l'extension
+5. L'extension sera active sur les pages Jira compatibles (`*.atlassian.net`)
 
 ### Firefox
 1. Ouvrez Firefox et accédez à `about:debugging#/runtime/this-firefox`
@@ -73,7 +82,7 @@ L'extension utilise les API modernes des navigateurs et nécessite donc des vers
 
 ```
 jira-boosted/
-├── manifest.json      # Configuration de l'extension
+├── manifest.json      # Configuration de l'extension (permissions minimales, injection sur *.atlassian.net)
 ├── popup.html        # Interface utilisateur de l'extension
 ├── popup.js         # Logique de l'interface utilisateur
 ├── content.js       # Script d'injection des boutons dans JIRA
@@ -111,6 +120,7 @@ MIT
 - Les boutons personnalisés sont stockés localement dans votre navigateur
 - Aucune donnée n'est envoyée à des serveurs externes
 - Le code source est ouvert et peut être audité
+- **Permissions minimales strictement respectées**
 
 ## Contribution
 
@@ -124,7 +134,7 @@ Nous accueillons les contributions ! Voici comment vous pouvez aider :
 
 1. Fork le projet
 2. Créez une branche pour votre fonctionnalité (`git checkout -b feature/AmazingFeature`)
-3. Committez vos changements (`git commit -m 'Ajout d'une fonctionnalité incroyable'`)
+3. Committez vos changements (`git commit -m 'Ajout d\'une fonctionnalité incroyable'`)
 4. Push vers la branche (`git push origin feature/AmazingFeature`)
 5. Ouvrez une Pull Request
 

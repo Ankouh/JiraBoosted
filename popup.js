@@ -63,17 +63,17 @@ document.addEventListener('DOMContentLoaded', function() {
   function saveButtonOrder() {
     const buttons = Array.from(document.querySelectorAll('.button-item')).map(button => {
       const nameSpan = button.querySelector('span:first-of-type');
-      const urlSpan = button.querySelector('span:nth-child(2)');
       const color = button.dataset.color;
+      const url = button.dataset.url;
       
-      if (!nameSpan || !urlSpan) {
-        console.error('Éléments span manquants dans le bouton');
+      if (!nameSpan || !url) {
+        console.error('Éléments manquants dans le bouton');
         return null;
       }
 
       return {
         name: nameSpan.textContent,
-        url: urlSpan.textContent,
+        url: url,
         color: color || '#0052CC'
       };
     }).filter(button => button !== null);
@@ -114,6 +114,7 @@ document.addEventListener('DOMContentLoaded', function() {
         buttonElement.draggable = true;
         buttonElement.dataset.index = index;
         buttonElement.dataset.color = button.color || '#0052CC';
+        buttonElement.dataset.url = button.url;
         buttonElement.style.borderLeft = `4px solid ${button.color || '#0052CC'}`;
         buttonElement.innerHTML = `
           <div class="drag-handle">⋮⋮</div>

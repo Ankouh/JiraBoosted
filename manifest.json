@@ -4,9 +4,7 @@
   "version": "1.0.0",
   "description": "Améliorez votre expérience JIRA avec des fonctionnalités supplémentaires",
   "permissions": [
-    "storage",
-    "activeTab",
-    "scripting"
+    "storage"
   ],
   "host_permissions": [
     "*://sts-lyon.atlassian.net/*"
